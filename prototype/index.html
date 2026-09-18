@@ -210,8 +210,8 @@ button{cursor:pointer;background:none;border:0}
   position:relative;background:var(--c);color:var(--fg);
   padding:22px 18px 30px;align-self:start;
   box-shadow:0 24px 40px rgba(0,0,0,.55);
-  animation:rise .6s cubic-bezier(.2,.8,.2,1) both;
 }
+.enter .strip{animation:rise .6s cubic-bezier(.2,.8,.2,1) both}
 .strip .tex{position:absolute;inset:0;pointer-events:none;background-image:var(--noise),var(--fiber);opacity:calc(var(--grain) * 1.6);mix-blend-mode:soft-light}
 .strip h1{font-family:var(--mono);font-weight:400;font-size:42px;letter-spacing:-.05em;line-height:.9;text-transform:lowercase;margin-bottom:18px;word-break:break-word}
 .strip .label-card{background:#f4f2ec;color:#161614;padding:12px 14px;font-size:12px;line-height:1.4;margin:0 -18px 14px;position:relative}
@@ -231,8 +231,8 @@ button{cursor:pointer;background:none;border:0}
   position:relative;background:var(--paper);color:var(--ink);
   display:flex;flex-direction:column;min-height:70vh;max-height:calc(100vh - 110px);
   box-shadow:0 24px 44px rgba(0,0,0,.55);
-  animation:rise .6s .08s cubic-bezier(.2,.8,.2,1) both;
 }
+.enter .page{animation:rise .6s .08s cubic-bezier(.2,.8,.2,1) both}
 .page .tex{position:absolute;inset:0;pointer-events:none;background-image:var(--noise),var(--fiber);opacity:calc(var(--grain) * 1.6);mix-blend-mode:soft-light}
 .page header{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;padding:22px 26px 14px;border-bottom:1px solid rgba(0,0,0,.12);position:relative}
 .page header h2{font-family:var(--mono);font-weight:400;font-size:22px;letter-spacing:-.03em;line-height:1.1}
@@ -300,6 +300,71 @@ input[type=range]{accent-color:#e9e5dc;width:150px}
 .x{font-size:22px;line-height:1;color:var(--muted)}
 .x:hover{color:#fff}
 
+
+/* ---------- anonymizer preview ---------- */
+.pv-scrim{position:fixed;inset:0;z-index:70;background:rgba(6,6,5,.72);display:flex;align-items:center;justify-content:center;padding:24px;animation:fade .25s both}
+@keyframes fade{from{opacity:0}}
+.pv{
+  position:relative;width:min(980px,100%);max-height:calc(100vh - 48px);overflow:auto;
+  background:var(--paper);color:var(--ink);box-shadow:0 40px 80px rgba(0,0,0,.6);
+  animation:rise .5s cubic-bezier(.2,.8,.2,1) both;
+}
+.pv > .tex{position:absolute;inset:0;pointer-events:none;background-image:var(--noise),var(--fiber);opacity:calc(var(--grain) * 1.6);mix-blend-mode:soft-light}
+.pv header{display:flex;justify-content:space-between;gap:16px;padding:22px 26px 16px;border-bottom:1px solid rgba(0,0,0,.12);position:relative}
+.pv h3{font-family:var(--mono);font-weight:400;font-size:22px;letter-spacing:-.03em}
+.pv header p{font-size:12px;color:#6e6a62;max-width:420px;line-height:1.45;margin-top:4px}
+.pv .cols{display:grid;grid-template-columns:1fr 1fr;position:relative}
+.pv .col{padding:20px 26px 24px}
+.pv .col + .col{border-left:1px solid rgba(0,0,0,.12);background:rgba(0,0,0,.035)}
+.pv .col h4{font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:#7c786f;font-weight:500;margin-bottom:12px;display:flex;justify-content:space-between}
+.pv .txt{font-size:15px;line-height:1.9;white-space:pre-wrap}
+.pv .out{font-family:var(--mono);font-size:13.5px;line-height:1.8;white-space:pre-wrap}
+.chip{
+  position:relative;display:inline;padding:2px 5px;margin:0 1px;cursor:pointer;border-radius:2px;
+  box-decoration-break:clone;-webkit-box-decoration-break:clone;transition:background .15s,color .15s;
+}
+.chip sup{white-space:nowrap;font-family:var(--mono);font-size:8.5px;letter-spacing:.04em;text-transform:uppercase;margin-left:4px;opacity:.7;vertical-align:.5em}
+.chip.keep{box-shadow:inset 0 -1.5px 0 #6D7B5B;background:rgba(109,123,91,.12)}
+.chip.general{background:#F1C92E}
+.chip.mask{background:var(--ink);color:var(--paper)}
+.chip.drop{background:rgba(226,98,61,.16);color:#9b3b1f;text-decoration:line-through;text-decoration-thickness:1.5px}
+.chip:hover{outline:1.5px solid var(--ink);outline-offset:1px}
+.tok{padding:1px 4px;border-radius:2px}
+.tok.general{background:#F1C92E}
+.tok.mask{background:var(--ink);color:var(--paper)}
+.tok.drop{color:#9b3b1f;opacity:.7}
+.tok.keep{box-shadow:inset 0 -1.5px 0 #6D7B5B}
+.menu{
+  position:fixed;z-index:80;background:#161614;color:#e9e5dc;min-width:230px;padding:6px;box-shadow:0 14px 30px rgba(0,0,0,.45);
+  font-size:12.5px;animation:fade .15s both;
+}
+.menu .mh{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:6px 8px 8px}
+.menu button{display:grid;grid-template-columns:14px 1fr;gap:10px;width:100%;text-align:left;padding:7px 8px;align-items:start}
+.menu button:hover{background:rgba(255,255,255,.07)}
+.menu button.on{color:#F1C92E}
+.menu small{display:block;color:var(--muted);font-size:10.5px;margin-top:1px}
+.menu label{display:flex;gap:8px;align-items:center;padding:8px;border-top:1px solid var(--line);margin-top:4px;color:var(--muted);font-size:11px;cursor:pointer}
+.pv footer{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:14px 26px;border-top:1px solid rgba(0,0,0,.12);position:relative;flex-wrap:wrap}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:11px;color:#6e6a62}
+.legend span{display:flex;align-items:center;gap:6px}
+.legend i{width:12px;height:12px;display:inline-block;border-radius:2px}
+.pv footer .acts{display:flex;gap:8px}
+.btn{font-family:var(--mono);font-size:12px;padding:9px 16px;border:1px solid var(--ink)}
+.btn.dark{background:var(--ink);color:var(--paper)}
+.stay{font-size:11px;color:#6e6a62;margin-top:16px;padding-top:12px;border-top:1px dashed rgba(0,0,0,.2);line-height:1.6}
+.stay b{color:var(--ink);font-weight:600}
+
+.msg .peek{margin-top:6px;font-family:var(--mono);font-size:10.5px;color:#7c786f;text-decoration:underline;text-underline-offset:3px}
+.msg .saw{margin-top:8px;font-family:var(--mono);font-size:12px;line-height:1.7;background:rgba(0,0,0,.05);padding:10px 12px;text-align:left;white-space:pre-wrap;border-left:2px solid var(--ink)}
+.msg .saw .lbl{display:block;font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:#7c786f;margin-bottom:4px}
+.msg .body{white-space:pre-wrap}
+.restored{box-shadow:inset 0 -2px 0 #3D8FE0;background:rgba(61,143,224,.1)}
+.shield{font-family:var(--mono);font-size:10px;color:#6D7B5B;margin-left:8px}
+.tries{display:flex;gap:8px;padding:0 16px 12px;position:relative;flex-wrap:wrap}
+.tries button{font-family:var(--mono);font-size:11px;color:#6e6a62;border:1px dashed rgba(0,0,0,.25);padding:5px 10px}
+.tries button:hover{color:var(--ink);border-color:var(--ink)}
+@media (max-width:760px){ .pv .cols{grid-template-columns:1fr} .pv .col + .col{border-left:0;border-top:1px solid rgba(0,0,0,.12)} }
+
 @media (max-width:760px){
   .bar{padding:16px 16px 12px}
   .board{padding:16px 16px 170px;gap:28px 18px;grid-template-columns:repeat(auto-fill,minmax(140px,1fr))}
@@ -346,6 +411,7 @@ const PRESETS = {
 const d = (s)=>s;
 const DEFAULT = {
   preset:"kraft", grain:.38, tilt:true, envelopes:true,
+  dict:[{text:"Alex Morgan",type:"person"},{text:"Northwind GmbH",type:"org"},{text:"Northwind",type:"org"}], memory:{},
   folders:[
     {id:"visa",   name:"visa",    ci:0, showName:false, privacy:"local", keywords:["visa","passport","embassy","application"],
       chats:[{t:"Document checklist",d:"12 sep"},{t:"Application form questions",d:"3 sep"},{t:"Appointment prep",d:"21 aug"}]},
@@ -365,7 +431,7 @@ const DEFAULT = {
 };
 
 /* ---------------- state ---------------- */
-const KEY="skin.proto.v2";
+const KEY="skin.proto.v3";
 let S;
 try{ S = JSON.parse(localStorage.getItem(KEY)) || null }catch(e){ S=null }
 if(!S) S = structuredClone(DEFAULT);
@@ -441,9 +507,10 @@ function renderBoard(){
     e.preventDefault(); const t=$("#q").value.trim(); if(!t) return;
     const f=classify(t);
     const chat={id:f.id+"-"+Date.now(),t:t.length>48?t.slice(0,46)+"…":t,d:"today",m:[{me:true,x:t}]};
+    if(f.privacy==="anon") chat.m=[];
     f.chats.unshift(chat); save();
     toast(`→ filed in ${f.showName?f.name:"a private folder"}`);
-    setTimeout(()=>go({name:"room",fid:f.id,cid:chat.id,reply:true}),650);
+    setTimeout(()=>go(f.privacy==="anon"?{name:"room",fid:f.id,cid:chat.id,pending:t}:{name:"room",fid:f.id,cid:chat.id,reply:true}),650);
   };
   $("#addFolder").onclick=()=>{
     const id="f"+Date.now();
@@ -469,7 +536,7 @@ function renderRoom(){
   const chat=f.chats.find(x=>x.id===view.cid);
   $("#crumbs").innerHTML=`<div class="crumbs"><button id="back">← board</button><span>/</span><span>${esc(f.showName?f.name:"●●●")}</span></div>`;
   $("#app").innerHTML=`
-    <section class="room">
+    <section class="room ${view.fresh?"enter":""}">
       <aside class="strip" style="--c:${c};--fg:${fg}">
         <div class="tex"></div>
         <h1>${f.showName?esc(f.name):"&nbsp;"}</h1>
@@ -481,7 +548,8 @@ function renderRoom(){
         ${chat?`
           <header><h2>${esc(chat.t)}</h2><span class="badge">${PRIV[f.privacy]}</span></header>
           <div class="msgs" id="msgs">${chat.m.length?chat.m.map(msgHTML).join(""):`<div class="empty">this thread is imported.<br>messages load from your export.</div>`}</div>
-          <form id="send"><input id="mi" placeholder="reply…" autocomplete="off"><button>send</button></form>`
+          ${f.privacy==="anon"?`<div class="tries"><button data-try="tax">try: tax question</button><button data-try="letter">try: reply to a letter</button></div>`:""}
+          <form id="send"><input id="mi" placeholder="${f.privacy==="anon"?"write — you'll check it before it leaves…":"reply…"}" autocomplete="off"><button>send</button></form>`
         :`<div class="empty">pick a thread<br>or <button id="newIn" style="text-decoration:underline">start one here</button></div>`}
       </article>
     </section>`;
@@ -492,21 +560,200 @@ function renderRoom(){
   });
   if(chat){
     const box=$("#msgs"); box.scrollTop=box.scrollHeight;
-    $("#send").onsubmit=e=>{
-      e.preventDefault(); const t=$("#mi").value.trim(); if(!t) return;
+    box.querySelectorAll("[data-peek]").forEach(b=>b.onclick=()=>{ b.nextElementSibling.hidden=!b.nextElementSibling.hidden; b.textContent=b.nextElementSibling.hidden?b.dataset.label:"hide" });
+    const submit=t=>{
+      if(!t) return;
+      if(f.privacy==="anon") return openPreview(f,chat,t);
       chat.m.push({me:true,x:t}); if(chat.t==="untitled") chat.t=t.slice(0,46); save();
       view.reply=true; renderRoom();
     };
+    $("#send").onsubmit=e=>{ e.preventDefault(); submit($("#mi").value.trim()) };
+    document.querySelectorAll("[data-try]").forEach(b=>b.onclick=()=>submit(EXAMPLES[b.dataset.try]));
+    if(view.pending){ const t=view.pending; view.pending=null; chat.m=chat.m.filter(m=>!(m.me&&m.x===t&&!m.sent)); openPreview(f,chat,t) }
     if(view.reply){ view.reply=false; setTimeout(()=>{ chat.m.push({me:false,x:mockReply(f)}); save(); if(view.cid===chat.id) renderRoom() },700) }
   }
 }
-function msgHTML(m){ return `<div class="msg ${m.me?"me":""}"><div class="who">${m.me?"you":"model"}</div><div class="body">${esc(m.x)}</div></div>` }
+function msgHTML(m){
+  let body=esc(m.x), extra="";
+  if(m.map){ // assistant reply that was restored locally
+    body=restoreHTML(m.raw,m.map);
+    extra=`<button class="peek" data-peek data-label="what Claude wrote">what Claude wrote</button><div class="saw" hidden><span class="lbl">sent back by Claude — before your details were put back</span>${esc(m.raw)}</div>`;
+  } else if(m.sent){
+    extra=`<button class="peek" data-peek data-label="what Claude saw">what Claude saw</button><div class="saw" hidden><span class="lbl">the only thing that left this Mac</span>${esc(m.sent)}</div>`;
+  }
+  return `<div class="msg ${m.me?"me":""}"><div class="who">${m.me?"you":"claude"}${m.sent||m.map?`<span class="shield">anonymized</span>`:""}</div><div class="body">${body}</div>${extra}</div>`;
+}
 function mockReply(f){
   return {
     local:"(prototype) In the real app this goes to a local model — Ollama on your Mac. This folder never touches the internet.",
     anon:"(prototype) A local model would first replace names, numbers and addresses with placeholders, then ask Claude, then put your details back into the answer.",
     cloud:"(prototype) This would stream from Claude or GPT using your own API key. The conversation is saved only on this device."
   }[f.privacy];
+}
+
+/* ---------------- anonymizer ---------------- */
+const EXAMPLES={
+  tax:"I'm Alex Morgan, I live in Munich since 2023 and work as a freelancer. Last year I earned 83 412 € from a client in the USA. My tax ID is 12345678901. How much tax should I expect to pay in Germany, and what should I prepare?",
+  letter:"Please draft a polite reply to this letter:\n\n\"Dear Alex Morgan, regarding your application no. 48213977 submitted on 14.03.2025, we still need a copy of your rental contract for Hauptstrasse 12, Munich. Please send it to office@northwind.de within 14 days. — Northwind GmbH\"\n\nSay that I'll send the contract by Friday."
+};
+const CITIES={Munich:"Germany",Berlin:"Germany",Hamburg:"Germany",Frankfurt:"Germany",Cologne:"Germany",Kyiv:"Ukraine",Lviv:"Ukraine",Odesa:"Ukraine",Kharkiv:"Ukraine",Warsaw:"Poland",Krakow:"Poland",Lisbon:"Portugal",Porto:"Portugal",Madrid:"Spain",Barcelona:"Spain",Valencia:"Spain",Paris:"France",Lyon:"France",Vienna:"Austria",Zurich:"Switzerland",Geneva:"Switzerland",Prague:"Czech Republic",Amsterdam:"Netherlands",Rotterdam:"Netherlands",London:"UK",Manchester:"UK",Dublin:"Ireland",Rome:"Italy",Milan:"Italy",Stockholm:"Sweden",Copenhagen:"Denmark","New York":"USA","San Francisco":"USA","Los Angeles":"USA",Toronto:"Canada",Vancouver:"Canada"};
+const COUNTRIES=["Germany","Ukraine","Poland","Portugal","Spain","France","Austria","Switzerland","Czech Republic","Netherlands","UK","United Kingdom","Ireland","Italy","Sweden","Denmark","USA","United States","Canada"];
+const MONTHS=["January","February","March","April","May","June","July","August","September","October","November","December"];
+const TYPES={
+  person: {label:"name",      def:"mask",    acts:["keep","mask","drop"]},
+  org:    {label:"organisation",def:"mask",  acts:["keep","mask","drop"]},
+  email:  {label:"email",     def:"drop",    acts:["keep","mask","drop"]},
+  phone:  {label:"phone",     def:"drop",    acts:["keep","mask","drop"]},
+  iban:   {label:"bank account",def:"drop",  acts:["keep","mask","drop"]},
+  id:     {label:"id number", def:"drop",    acts:["keep","mask","drop"]},
+  address:{label:"address",   def:"drop",    acts:["keep","general","mask","drop"]},
+  money:  {label:"amount",    def:"general", acts:["keep","general","mask","drop"]},
+  date:   {label:"date",      def:"general", acts:["keep","general","drop"]},
+  city:   {label:"city",      def:"general", acts:["keep","general","mask","drop"]},
+  country:{label:"country",   def:"keep",    acts:["keep","mask","drop"]},
+};
+const ACTS={
+  keep:   {name:"keep",       hint:"needed for a good answer",       icon:"✓"},
+  general:{name:"generalize", hint:"send the rough version",         icon:"≈"},
+  mask:   {name:"placeholder",hint:"swap for [TAG], restore after",  icon:"■"},
+  drop:   {name:"remove",     hint:"not needed at all",              icon:"✕"},
+};
+const reEsc=t=>t.replace(/[.*+?^${}()|[\]\\]/g,"\\$&");
+function detect(text){
+  const found=[];
+  const add=(re,type)=>{ for(const m of text.matchAll(re)) found.push({start:m.index,end:m.index+m[0].length,text:m[0],type}) };
+  for(const d of S.dict||[]) if(d.text) add(new RegExp("\\b"+reEsc(d.text)+"\\b","gi"),d.type);
+  add(/[\w.+-]+@[\w-]+\.[\w.]+/g,"email");
+  add(/\b[A-Z]{2}\d{2}(?:\s?[A-Z0-9]{4}){3,7}\b/g,"iban");
+  add(/\+\d[\d\s().-]{7,}\d/g,"phone");
+  add(/\b[\p{Lu}][\p{Ll}]+(?:strasse|straße|str\.|street|st\.|avenue|ave\.|road|weg|platz|allee)\s?\d+\w?\b/gu,"address");
+  add(/\b\d{1,2}[./]\d{1,2}[./]\d{2,4}\b/g,"date");
+  add(new RegExp("\\b\\d{1,2}\\s(?:"+MONTHS.join("|")+")(?:\\s\\d{4})?\\b","gi"),"date");
+  add(/(?:[€$£]\s?(?:\d{1,3}(?:[ ,. ]\d{3})+|\d+)(?:[.,]\d{1,2})?|\b(?:\d{1,3}(?:[ ,. ]\d{3})+|\d+)(?:[.,]\d{1,2})?\s?(?:€|\$|£|EUR|USD|GBP|euros?|dollars?)(?![\w]))/gi,"money");
+  add(/\b(?:[A-Z]{1,3}\d{6,}|\d{8,})\b/g,"id");
+  add(new RegExp("\\b(?:"+Object.keys(CITIES).map(reEsc).join("|")+")\\b","g"),"city");
+  add(new RegExp("\\b(?:"+COUNTRIES.map(reEsc).join("|")+")\\b","g"),"country");
+  found.sort((a,b)=>a.start-b.start||(b.end-b.start)-(a.end-a.start));
+  const out=[]; let last=-1;
+  for(const f of found){ if(f.start>=last){ out.push(f); last=f.end } }
+  return out.map(f=>({...f,act:(S.memory||{})[f.text.toLowerCase()]||TYPES[f.type].def}));
+}
+function generalize(sp){
+  if(sp.type==="money"){
+    const cur=(sp.text.match(/€|\$|£|EUR|USD|GBP|euros?|dollars?/i)||["€"])[0];
+    const n=parseFloat(sp.text.replace(/[^\d.,]/g,"").replace(/[ ,. ](?=\d{3}\b)/g,"").replace(",","."));
+    if(!n) return "some amount";
+    const p=10**Math.floor(Math.log10(n)), lo=Math.floor(n/p)*p, hi=lo+p;
+    const k=v=>v>=1000?(v/1000)+"k":String(v);
+    return `${k(lo)}–${k(hi)} ${cur}`;
+  }
+  if(sp.type==="date"){
+    let m=sp.text.match(/(\d{1,2})[./](\d{1,2})[./](\d{2,4})/);
+    if(m) return `${MONTHS[+m[2]-1]||"a month"} ${m[3].length===2?"20"+m[3]:m[3]}`;
+    m=sp.text.match(/\d{1,2}\s(\w+)(?:\s(\d{4}))?/); return m?`${m[1]}${m[2]?" "+m[2]:""}`:"a date";
+  }
+  if(sp.type==="city") return CITIES[sp.text]||"a city";
+  if(sp.type==="address") return "a street address";
+  return sp.text;
+}
+// builds what leaves the device + the placeholder map that stays here
+function buildOutgoing(text,spans){
+  const map={}, counters={}, byText={};
+  let out="", i=0;
+  for(const sp of spans){
+    out+=text.slice(i,sp.start); i=sp.end;
+    if(sp.act==="keep") out+=sp.text;
+    else if(sp.act==="general") out+=generalize(sp);
+    else if(sp.act==="drop") out+="[removed]";
+    else {
+      const key=sp.type+"|"+sp.text.toLowerCase();
+      if(!byText[key]){ counters[sp.type]=(counters[sp.type]||0)+1; byText[key]=`[${sp.type.toUpperCase()}_${counters[sp.type]}]`; map[byText[key]]=sp.text }
+      out+=byText[key];
+    }
+  }
+  return {out:out+text.slice(i),map};
+}
+function outgoingHTML(text,spans){
+  let h="", i=0; const {map}=buildOutgoing(text,spans), rev=Object.fromEntries(Object.entries(map).map(([k,v])=>[v.toLowerCase(),k]));
+  for(const sp of spans){
+    h+=esc(text.slice(i,sp.start)); i=sp.end;
+    const v= sp.act==="keep"?sp.text : sp.act==="general"?generalize(sp) : sp.act==="drop"?"[removed]" : rev[sp.text.toLowerCase()];
+    h+=`<span class="tok ${sp.act}">${esc(v)}</span>`;
+  }
+  return h+esc(text.slice(i));
+}
+function restoreHTML(raw,map){
+  let h=esc(raw);
+  for(const [ph,real] of Object.entries(map)) h=h.split(esc(ph)).join(`<span class="restored" title="${esc(ph)} — restored on this Mac">${esc(real)}</span>`);
+  return h;
+}
+function openPreview(f,chat,text){
+  const spans=detect(text);
+  const el=document.createElement("div"); el.className="pv-scrim";
+  document.body.appendChild(el);
+  const close=()=>{ el.remove(); document.querySelector(".menu")?.remove() };
+  const draw=()=>{
+    let h="", i=0;
+    spans.forEach((sp,k)=>{ h+=esc(text.slice(i,sp.start)); i=sp.end;
+      h+=`<span class="chip ${sp.act}" data-k="${k}" tabindex="0">${esc(sp.text)}<sup>${ACTS[sp.act].icon} ${TYPES[sp.type].label}</sup></span>` });
+    h+=esc(text.slice(i));
+    const n=a=>spans.filter(s=>s.act===a).length;
+    const kept=spans.filter(s=>s.act!=="keep");
+    el.innerHTML=`<div class="pv" role="dialog" aria-label="Check before sending">
+      <div class="tex"></div>
+      <header><div><h3>check before it leaves</h3><p>Skin found ${spans.length} personal detail${spans.length===1?"":"s"}. Tap any highlight to change what Claude gets. Your choices are remembered.</p></div>
+        <button class="x" data-close aria-label="Close" style="color:#6e6a62">×</button></header>
+      <div class="cols">
+        <div class="col"><h4><span>you wrote</span><span>stays on this Mac</span></h4><div class="txt">${h}</div></div>
+        <div class="col"><h4><span>claude will see</span><span>${buildOutgoing(text,spans).out.length} chars</span></h4><div class="out">${outgoingHTML(text,spans)}</div>
+          <div class="stay">${kept.length?`<b>Never leaves this Mac:</b> ${kept.map(s=>esc(s.text)).join(" · ")}`:"<b>Nothing is hidden</b> — everything goes as written."}</div></div>
+      </div>
+      <footer>
+        <div class="legend"><span><i style="box-shadow:inset 0 -2px 0 #6D7B5B;background:rgba(109,123,91,.15)"></i>kept ${n("keep")}</span><span><i style="background:#F1C92E"></i>generalized ${n("general")}</span><span><i style="background:#131311"></i>placeholder ${n("mask")}</span><span><i style="background:rgba(226,98,61,.3)"></i>removed ${n("drop")}</span></div>
+        <div class="acts"><button class="btn" data-close>cancel</button><button class="btn dark" data-send>send to claude →</button></div>
+      </footer></div>`;
+    el.querySelectorAll("[data-close]").forEach(b=>b.onclick=close);
+    el.querySelector("[data-send]").onclick=()=>{
+      const {out,map}=buildOutgoing(text,spans);
+      chat.m.push({me:true,x:text,sent:out}); if(chat.t==="untitled") chat.t=text.slice(0,46);
+      save(); close(); renderRoom();
+      setTimeout(()=>{ const raw=anonReply(out,map); chat.m.push({me:false,raw,map}); save(); if(view.cid===chat.id) renderRoom() },900);
+    };
+    el.querySelectorAll(".chip").forEach(c=>c.onclick=e=>{ e.stopPropagation(); menu(c,spans[+c.dataset.k]) });
+  };
+  const menu=(anchor,sp)=>{
+    document.querySelector(".menu")?.remove();
+    const m=document.createElement("div"); m.className="menu";
+    m.innerHTML=`<div class="mh">${esc(TYPES[sp.type].label)} · “${esc(sp.text)}”</div>`+
+      TYPES[sp.type].acts.map(a=>`<button data-a="${a}" class="${sp.act===a?"on":""}"><span>${ACTS[a].icon}</span><span>${ACTS[a].name}${a==="general"?` → ${esc(generalize(sp))}`:""}<small>${ACTS[a].hint}</small></span></button>`).join("")+
+      `<label><input type="checkbox" checked data-rem> remember for “${esc(sp.text)}”</label>`;
+    document.body.appendChild(m);
+    const r=anchor.getBoundingClientRect();
+    m.style.left=Math.min(r.left,innerWidth-m.offsetWidth-12)+"px";
+    m.style.top=(r.bottom+m.offsetHeight+8>innerHeight?r.top-m.offsetHeight-6:r.bottom+6)+"px";
+    m.onclick=e=>e.stopPropagation();
+    m.querySelectorAll("[data-a]").forEach(b=>b.onclick=()=>{
+      const a=b.dataset.a;
+      spans.forEach(s=>{ if(s.text.toLowerCase()===sp.text.toLowerCase()) s.act=a });
+      if(m.querySelector("[data-rem]").checked){ S.memory=S.memory||{}; S.memory[sp.text.toLowerCase()]=a; save() }
+      m.remove(); draw();
+    });
+  };
+  el.onclick=e=>{ document.querySelector(".menu")?.remove(); if(e.target===el) close() };
+  draw();
+}
+// stand-in for Claude: answers using only what it was sent (placeholders included)
+function anonReply(out,map){
+  const ph=t=>Object.keys(map).find(k=>k.startsWith("["+t));
+  const person=ph("PERSON"), org=ph("ORG");
+  if(/reply|letter/i.test(out)){
+    return `${org?`Dear ${org} team,`:"Dear Sir or Madam,"}\n\nThank you for your letter regarding my application. I will send you a copy of the rental contract by Friday.\n\nPlease let me know if you need anything else in the meantime.\n\nKind regards,\n${person||"[your name]"}\n\n(prototype — Claude's real draft goes here.)`;
+  }
+  if(/tax/i.test(out)){
+    const place=(out.match(/\b(Germany|Ukraine|Poland|Portugal|Spain|France|Austria|Netherlands|UK|Italy|USA|Canada)\b/)||[])[0]||"your country of residence";
+    return `(prototype — Claude's real answer goes here.)\n\nClaude only saw a freelancer, tax-resident in ${place}, with income in a rough range. That is enough to explain the rules, rates and what to prepare — without knowing who you are.${person?`\n\nIt referred to you as ${person}.`:""}`;
+  }
+  return `(prototype) Claude would answer here. It only saw:\n\n${out}`;
 }
 
 /* ---------------- settings ---------------- */
@@ -545,6 +792,11 @@ function renderSettings(openId){
           </div>
         </details>`).join("")}
     </div>
+    <div class="sec"><h4>private words</h4>
+      <p class="small" style="margin-bottom:8px">Always hidden in anonymized folders. One per line — <code>text = person | org | city | id</code>. Stored only here.</p>
+      <textarea id="dict" rows="5" style="width:100%;background:#0f0f0e;border:1px solid var(--line);padding:8px 10px;font-family:var(--mono);font-size:12px;outline:none;resize:vertical">${esc((S.dict||[]).map(d=>d.text+" = "+d.type).join("\n"))}</textarea>
+      <div class="row"><span class="small">${Object.keys(S.memory||{}).length} remembered choices</span><button class="settings-btn" id="forget">forget choices</button></div>
+    </div>
     <div class="sec"><h4>model</h4>
       <div class="row">cloud model <select style="width:170px"><option>Claude (API key)</option><option>OpenAI (API key)</option></select></div>
       <div class="row">local model <select style="width:170px"><option>Ollama · llama3.2</option><option>LM Studio</option></select></div>
@@ -558,6 +810,8 @@ function renderSettings(openId){
   const B=$("#settingsBody");
   B.querySelectorAll("[data-preset]").forEach(b=>b.onclick=()=>{ S.preset=b.dataset.preset; commit(openIdNow()) });
   $("#grain").oninput=e=>{ S.grain=+e.target.value; applyGlobals(); save() };
+  $("#dict").onchange=e=>{ S.dict=e.target.value.split("\n").map(l=>l.split("=")).filter(x=>x[0].trim()).map(([t,ty])=>({text:t.trim(),type:TYPES[(ty||"").trim()]?(ty||"").trim():"person"})); save() };
+  $("#forget").onclick=()=>{ S.memory={}; commit() };
   $("#tilt").onclick=()=>{ S.tilt=!S.tilt; commit() };
   $("#envs").onclick=()=>{ S.envelopes=!S.envelopes; commit() };
   $("#reset").onclick=()=>{ S=structuredClone(DEFAULT); S.folders.forEach(f=>f.chats.forEach((c,i)=>{c.id=f.id+"-"+i;c.m=[]})); commit() };
@@ -584,7 +838,7 @@ const openIdNow=()=>$("#settingsBody .fold[open]")?.dataset.f;
 function commit(openId=openIdNow()){ save(); render(); renderSettings(openId) }
 
 /* ---------------- router ---------------- */
-function go(v){ view=v; render(); window.scrollTo(0,0) }
+function go(v){ view={...v,fresh:true}; render(); view.fresh=false; window.scrollTo(0,0) }
 function render(){
   applyGlobals();
   view.name==="room" ? renderRoom() : renderBoard();
