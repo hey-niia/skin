@@ -1,0 +1,15 @@
+node_modules/
+dist/
+.DS_Store
+.env*
+
+# Personal data — never commit chat exports or keys
+*.zip
+conversations*.json
+users.json
+projects.json
+memories.json
+data/
+exports/
+imports/
+*.key

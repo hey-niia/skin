@@ -1,0 +1,603 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Skin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Spline+Sans+Mono:wght@300;400;500&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0c0c0b;
+  --ink:#131311;
+  --paper:#ecE9e2;
+  --muted:#8b877f;
+  --line:rgba(255,255,255,.09);
+  --grain:.38;
+  --tilt:1;
+  --mono:"Spline Sans Mono", ui-monospace, monospace;
+  --sans:"Instrument Sans", "Helvetica Neue", sans-serif;
+  --noise:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .5  0 0 0 0 .5  0 0 0 0 .5  0 0 0 1.4 -.35'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  --fiber:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='300'><filter id='f'><feTurbulence type='fractalNoise' baseFrequency='.012 .4' numOctaves='2' seed='4'/><feColorMatrix values='0 0 0 0 .5  0 0 0 0 .5  0 0 0 0 .5  0 0 0 .9 -.3'/></filter><rect width='100%' height='100%' filter='url(%23f)'/></svg>");
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  background:var(--bg);
+  color:#e9e5dc;
+  font-family:var(--sans);
+  font-size:14px;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+/* page grain */
+body::before{
+  content:"";position:fixed;inset:-50%;pointer-events:none;z-index:100;
+  background-image:var(--noise);opacity:calc(var(--grain) * .45);mix-blend-mode:overlay;
+}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;background:none;border:0}
+
+/* ---------- top bar ---------- */
+.bar{
+  position:sticky;top:0;z-index:20;
+  display:flex;align-items:flex-start;justify-content:space-between;gap:16px;
+  padding:22px 32px 18px;
+  background:linear-gradient(var(--bg) 60%, transparent);
+}
+.brand{display:flex;gap:18px;align-items:flex-start}
+.mark{width:14px;height:14px;display:grid;grid-template-columns:repeat(3,1fr);gap:1px;margin-top:3px}
+.mark i{background:#e9e5dc;opacity:.85}
+.mark i:nth-child(2n){opacity:.25}
+.meta{font-size:10.5px;line-height:1.35;color:var(--muted);letter-spacing:.01em}
+.meta b{color:#e9e5dc;font-weight:500}
+.crumbs{font-family:var(--mono);font-size:12px;color:var(--muted);display:flex;gap:8px;align-items:center}
+.crumbs button{color:var(--muted)}
+.crumbs button:hover{color:#fff}
+.settings-btn{
+  font-family:var(--mono);font-size:12px;letter-spacing:.02em;
+  padding:8px 14px;border:1px solid rgba(255,255,255,.22);border-radius:999px;
+  transition:background .2s,color .2s;
+}
+.settings-btn:hover{background:#e9e5dc;color:#111}
+
+/* ---------- board ---------- */
+.board{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(190px,1fr));
+  gap:44px 36px;
+  padding:26px 48px 180px;
+  max-width:1320px;margin:0 auto;
+}
+.sheet-wrap{
+  --r:0deg;
+  transform:rotate(calc(var(--r) * var(--tilt)));
+  filter:drop-shadow(0 18px 22px rgba(0,0,0,.55)) drop-shadow(0 2px 3px rgba(0,0,0,.5));
+  transition:transform .45s cubic-bezier(.2,.8,.2,1), filter .45s;
+  animation:drop .7s cubic-bezier(.2,.8,.2,1) both;
+  animation-delay:calc(var(--i) * 55ms);
+}
+.sheet-wrap:hover{
+  transform:rotate(0deg) translateY(-8px) scale(1.02);
+  filter:drop-shadow(0 30px 34px rgba(0,0,0,.6)) drop-shadow(0 3px 4px rgba(0,0,0,.45));
+}
+@keyframes drop{from{opacity:0;transform:translateY(24px) rotate(calc(var(--r) * var(--tilt) * 3))}}
+
+.sheet{
+  --fold:30px;
+  position:relative;display:block;width:100%;aspect-ratio:1/1.3;
+  background:var(--c);color:var(--fg);text-align:left;
+  clip-path:polygon(0 0,100% 0,100% calc(100% - var(--fold)),calc(100% - var(--fold)) 100%,0 100%);
+  overflow:hidden;
+}
+/* paper light + curvature */
+.sheet::before{
+  content:"";position:absolute;inset:0;pointer-events:none;z-index:2;
+  background:
+    radial-gradient(120% 70% at 85% 0%, rgba(255,255,255,.16), transparent 55%),
+    linear-gradient(165deg, transparent 55%, rgba(0,0,0,.14));
+}
+/* grain + fibers */
+.sheet .tex{
+  position:absolute;inset:0;pointer-events:none;z-index:3;
+  background-image:var(--noise),var(--fiber);
+  opacity:calc(var(--grain) * 1.6);mix-blend-mode:soft-light;
+}
+/* folded corner */
+.sheet .corner{
+  position:absolute;right:0;bottom:0;width:var(--fold);height:var(--fold);z-index:4;
+  background:linear-gradient(135deg, color-mix(in srgb,var(--c) 70%,#fff) 0%, color-mix(in srgb,var(--c) 78%,#000) 100%);
+  clip-path:polygon(0 0,100% 0,0 100%);
+  box-shadow:inset 0 0 0 1px rgba(0,0,0,.05);
+}
+.sheet .corner::after{
+  content:"";position:absolute;inset:0;
+  background:linear-gradient(135deg,transparent 45%,rgba(0,0,0,.18));
+}
+.sheet .img{
+  position:absolute;left:0;right:0;top:0;height:52%;z-index:1;
+  background-size:cover;background-position:center;
+  mix-blend-mode:multiply;filter:grayscale(1) contrast(1.25);opacity:.9;
+}
+.sheet .name{
+  position:absolute;left:14px;right:14px;top:12px;z-index:5;
+  font-family:var(--mono);font-weight:400;font-size:clamp(22px,2.3vw,30px);
+  line-height:.95;letter-spacing:-.045em;text-transform:lowercase;word-break:break-word;
+}
+.sheet .foot{
+  position:absolute;left:14px;right:calc(var(--fold) + 8px);bottom:12px;z-index:5;
+  display:flex;justify-content:space-between;gap:8px;
+  font-size:9.5px;line-height:1.3;opacity:.8;
+}
+.sheet .count{
+  position:absolute;right:14px;top:50%;z-index:5;
+  font-family:var(--mono);font-size:11px;opacity:.7;
+}
+.sheet .hole{position:absolute;left:50%;top:10px;width:7px;height:7px;border-radius:50%;background:var(--bg);transform:translateX(-50%);z-index:6;display:none}
+.sheet.strip .hole{display:block}
+
+/* ---------- vellum envelope (private) ---------- */
+.env{
+  position:relative;display:block;width:100%;aspect-ratio:1/1.3;text-align:left;
+}
+.env .inside{
+  position:absolute;left:12%;right:12%;top:20%;bottom:16%;
+  background:var(--c);opacity:.75;
+}
+.env .vellum{
+  position:absolute;inset:0;
+  background:rgba(226,226,222,.74);
+  backdrop-filter:blur(10px) saturate(.8);-webkit-backdrop-filter:blur(7px) saturate(.8);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.35);
+}
+.env .vellum::after{
+  content:"";position:absolute;inset:0;background-image:var(--noise);opacity:calc(var(--grain) * .8);mix-blend-mode:multiply;
+}
+.env svg{position:absolute;inset:0;width:100%;height:100%}
+.env .tab{
+  position:absolute;left:50%;top:50%;width:22%;aspect-ratio:1/1.05;transform:translate(-50%,-6%);
+  background:var(--c);z-index:3;
+  box-shadow:0 1px 2px rgba(0,0,0,.15);
+}
+.env .tab::after{content:"";position:absolute;inset:0;background-image:var(--noise);opacity:calc(var(--grain) * 1.6);mix-blend-mode:soft-light}
+.env .name{
+  position:absolute;left:14px;bottom:12px;z-index:4;color:#2b2b29;
+  font-family:var(--mono);font-size:13px;letter-spacing:-.02em;text-transform:lowercase;opacity:.75;
+}
+.env .lock{
+  position:absolute;right:12px;bottom:12px;z-index:4;color:#3a3a37;font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;opacity:.7
+}
+
+/* loose / unsorted */
+.new-sheet{
+  display:flex;align-items:center;justify-content:center;aspect-ratio:1/1.3;width:100%;
+  border:1px dashed rgba(255,255,255,.2);color:var(--muted);font-family:var(--mono);font-size:12px;
+  transition:border-color .2s,color .2s;
+}
+.new-sheet:hover{border-color:rgba(255,255,255,.5);color:#fff}
+
+/* ---------- composer ---------- */
+.composer{
+  position:fixed;left:50%;bottom:26px;transform:translateX(-50%);z-index:30;
+  width:min(640px,calc(100% - 32px));
+}
+.composer form{
+  display:flex;gap:10px;align-items:center;
+  background:var(--paper);color:var(--ink);padding:10px 10px 10px 18px;
+  box-shadow:0 20px 40px rgba(0,0,0,.55);position:relative;
+}
+.composer form::after{content:"";position:absolute;inset:0;background-image:var(--noise);opacity:calc(var(--grain) * 1.6);mix-blend-mode:soft-light;pointer-events:none}
+.composer input{flex:1;border:0;background:none;outline:none;font-family:var(--mono);font-size:14px;color:var(--ink);min-width:0}
+.composer input::placeholder{color:#8a867d}
+.composer button{
+  font-family:var(--mono);font-size:12px;padding:8px 14px;background:var(--ink);color:var(--paper);position:relative;z-index:1;
+}
+.composer .hint{margin-top:8px;text-align:center;font-size:10.5px;color:var(--muted)}
+.toast{
+  position:fixed;left:50%;bottom:110px;transform:translate(-50%,10px);z-index:40;
+  font-family:var(--mono);font-size:12px;background:#e9e5dc;color:#111;padding:8px 14px;
+  opacity:0;transition:opacity .3s,transform .3s;pointer-events:none;
+}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+/* ---------- folder / chat view ---------- */
+.room{
+  display:grid;grid-template-columns:minmax(260px,340px) 1fr;gap:34px;
+  padding:14px 32px 40px;max-width:1320px;margin:0 auto;min-height:calc(100vh - 80px);
+}
+.strip{
+  position:relative;background:var(--c);color:var(--fg);
+  padding:22px 18px 30px;align-self:start;
+  box-shadow:0 24px 40px rgba(0,0,0,.55);
+  animation:rise .6s cubic-bezier(.2,.8,.2,1) both;
+}
+.strip .tex{position:absolute;inset:0;pointer-events:none;background-image:var(--noise),var(--fiber);opacity:calc(var(--grain) * 1.6);mix-blend-mode:soft-light}
+.strip h1{font-family:var(--mono);font-weight:400;font-size:42px;letter-spacing:-.05em;line-height:.9;text-transform:lowercase;margin-bottom:18px;word-break:break-word}
+.strip .label-card{background:#f4f2ec;color:#161614;padding:12px 14px;font-size:12px;line-height:1.4;margin:0 -18px 14px;position:relative}
+.strip ol{list-style:none;position:relative}
+.strip li button{
+  display:grid;grid-template-columns:28px 1fr;gap:10px;width:100%;text-align:left;color:inherit;
+  padding:12px 0;border-top:1px solid color-mix(in srgb,var(--fg) 30%,transparent);
+}
+.strip li button:hover .t{text-decoration:underline;text-underline-offset:3px}
+.strip li.on button .n{background:var(--fg);color:var(--c)}
+.strip .n{font-family:var(--mono);font-size:18px;line-height:1;width:24px;height:24px;display:grid;place-items:center}
+.strip .t{font-weight:600;font-size:13px;line-height:1.25}
+.strip .d{font-size:10.5px;opacity:.75;margin-top:3px}
+@keyframes rise{from{opacity:0;transform:translateY(30px)}}
+
+.page{
+  position:relative;background:var(--paper);color:var(--ink);
+  display:flex;flex-direction:column;min-height:70vh;max-height:calc(100vh - 110px);
+  box-shadow:0 24px 44px rgba(0,0,0,.55);
+  animation:rise .6s .08s cubic-bezier(.2,.8,.2,1) both;
+}
+.page .tex{position:absolute;inset:0;pointer-events:none;background-image:var(--noise),var(--fiber);opacity:calc(var(--grain) * 1.6);mix-blend-mode:soft-light}
+.page header{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;padding:22px 26px 14px;border-bottom:1px solid rgba(0,0,0,.12);position:relative}
+.page header h2{font-family:var(--mono);font-weight:400;font-size:22px;letter-spacing:-.03em;line-height:1.1}
+.badge{font-size:10px;letter-spacing:.07em;text-transform:uppercase;padding:5px 8px;border:1px solid currentColor;white-space:nowrap}
+.msgs{flex:1;overflow:auto;padding:22px 26px;display:flex;flex-direction:column;gap:18px;position:relative}
+.msg{max-width:620px;line-height:1.55;font-size:14.5px}
+.msg .who{font-family:var(--mono);font-size:10.5px;text-transform:lowercase;color:#7c786f;margin-bottom:4px}
+.msg.me{align-self:flex-end;text-align:right}
+.msg.me .body{font-family:var(--mono);font-size:13.5px;background:rgba(0,0,0,.05);padding:10px 14px;display:inline-block;text-align:left}
+.page form{display:flex;gap:10px;padding:14px 16px;border-top:1px solid rgba(0,0,0,.12);position:relative}
+.page form input{flex:1;border:0;background:none;outline:none;font-family:var(--mono);font-size:14px;color:var(--ink);padding:6px 10px}
+.page form button{font-family:var(--mono);font-size:12px;padding:8px 14px;background:var(--ink);color:var(--paper)}
+.empty{margin:auto;text-align:center;color:#8a867d;font-family:var(--mono);font-size:13px}
+
+/* ---------- settings drawer ---------- */
+.scrim{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:50;opacity:0;pointer-events:none;transition:opacity .3s}
+.scrim.open{opacity:1;pointer-events:auto}
+.drawer{
+  position:fixed;top:0;right:0;bottom:0;width:min(440px,100%);z-index:60;
+  background:#161614;border-left:1px solid var(--line);
+  transform:translateX(100%);transition:transform .45s cubic-bezier(.2,.8,.2,1);
+  display:flex;flex-direction:column;
+}
+.drawer.open{transform:none}
+.drawer header{display:flex;justify-content:space-between;align-items:center;padding:22px 24px;border-bottom:1px solid var(--line)}
+.drawer header h3{font-family:var(--mono);font-weight:400;font-size:20px;letter-spacing:-.03em}
+.drawer .body{overflow:auto;padding:8px 24px 40px}
+.sec{padding:18px 0;border-bottom:1px solid var(--line)}
+.sec h4{font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:500;margin-bottom:12px}
+.presets{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.preset{padding:10px;border:1px solid var(--line);text-align:left;transition:border-color .2s}
+.preset.on{border-color:#e9e5dc}
+.preset .sw{display:flex;height:34px;margin-bottom:8px}
+.preset .sw i{flex:1}
+.preset span{font-family:var(--mono);font-size:12px}
+.preset small{display:block;font-size:10px;color:var(--muted);margin-top:2px}
+.row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:6px 0;font-size:13px}
+input[type=range]{accent-color:#e9e5dc;width:150px}
+.switch{width:34px;height:20px;border-radius:999px;background:#3a3935;position:relative;transition:background .2s;flex:none}
+.switch::after{content:"";position:absolute;top:3px;left:3px;width:14px;height:14px;border-radius:50%;background:#e9e5dc;transition:transform .2s}
+.switch[aria-checked=true]{background:#8fbf7a}
+.switch[aria-checked=true]::after{transform:translateX(14px)}
+.fold{border:1px solid var(--line);margin-bottom:10px}
+.fold summary{display:flex;align-items:center;gap:12px;padding:10px 12px;cursor:pointer;list-style:none}
+.fold summary::-webkit-details-marker{display:none}
+.fold .chip{width:22px;height:28px;flex:none;box-shadow:0 2px 4px rgba(0,0,0,.4)}
+.fold .fn{flex:1;font-family:var(--mono);font-size:13px}
+.fold .pv{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.fold .inner{padding:4px 12px 14px;display:flex;flex-direction:column;gap:10px}
+.fold input[type=text],.drawer select{
+  width:100%;background:#0f0f0e;border:1px solid var(--line);padding:8px 10px;font-size:13px;outline:none
+}
+.swatches{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.swatches button{width:24px;height:24px;border:2px solid transparent;outline:1px solid rgba(255,255,255,.1)}
+.swatches button.on{border-color:#e9e5dc}
+.swatches label{width:24px;height:24px;display:grid;place-items:center;border:1px dashed rgba(255,255,255,.35);font-size:14px;color:var(--muted);cursor:pointer;position:relative;overflow:hidden}
+.swatches label input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.seg{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--line)}
+.seg button{padding:7px 4px;font-size:11px;color:var(--muted)}
+.seg button.on{background:#e9e5dc;color:#111}
+.small{font-size:11px;color:var(--muted);line-height:1.45}
+.imgrow{display:flex;gap:8px;align-items:center}
+.imgrow label,.imgrow button{font-size:11px;padding:6px 10px;border:1px solid var(--line);cursor:pointer;color:var(--muted)}
+.imgrow input{display:none}
+.x{font-size:22px;line-height:1;color:var(--muted)}
+.x:hover{color:#fff}
+
+@media (max-width:760px){
+  .bar{padding:16px 16px 12px}
+  .board{padding:16px 16px 170px;gap:28px 18px;grid-template-columns:repeat(auto-fill,minmax(140px,1fr))}
+  .room{grid-template-columns:1fr;padding:8px 16px 40px}
+  .meta.hide-sm{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="bar">
+  <div class="brand">
+    <div class="mark"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+    <div id="crumbs"></div>
+  </div>
+  <div class="meta hide-sm" id="status"></div>
+  <button class="settings-btn" id="openSettings">settings</button>
+</div>
+
+<main id="app"></main>
+
+<div class="toast" id="toast"></div>
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" aria-label="Settings">
+  <header><h3>settings</h3><button class="x" id="closeSettings" aria-label="Close">×</button></header>
+  <div class="body" id="settingsBody"></div>
+</aside>
+
+<script>
+/* ---------------- palettes (from references) ---------------- */
+const PRESETS = {
+  neon:   {name:"neon",   note:"flat & bright on black", bg:"#0b0b0a",
+           colors:["#F6A3CB","#FFC31F","#5FE68C","#20AEFF","#FF6B35","#F3F0E8","#B9A8FF"]},
+  kraft:  {name:"kraft",  note:"risograph poster stock", bg:"#0c0c0b",
+           colors:["#3D8FE0","#B88B58","#E2623D","#6B7FA6","#6D7B5B","#7B4B36","#F1C92E"]},
+  fold:   {name:"fold",   note:"soft pastel, folded",    bg:"#141413",
+           colors:["#F7A77B","#3F8EA5","#3E9B78","#F08878","#C7B39F","#BEE5DC","#C4553A"]},
+  vellum: {name:"vellum", note:"quiet, almost white",    bg:"#0a0a0a",
+           colors:["#ECE9E2","#D9D5CC","#BEB9AE","#9A958B","#5E5B55","#E5DDC9","#F1C92E"]},
+};
+
+/* ---------------- demo data ---------------- */
+const d = (s)=>s;
+const DEFAULT = {
+  preset:"kraft", grain:.38, tilt:true, envelopes:true,
+  folders:[
+    {id:"visa",   name:"visa",    ci:0, showName:false, privacy:"local", keywords:["visa","passport","embassy","application"],
+      chats:[{t:"Document checklist",d:"12 sep"},{t:"Application form questions",d:"3 sep"},{t:"Appointment prep",d:"21 aug"}]},
+    {id:"work",   name:"work",    ci:1, showName:true,  privacy:"cloud", keywords:["work","project","meeting","email","design"],
+      chats:[{t:"Project plan",d:"17 sep"},{t:"Meeting notes summary",d:"15 sep"},{t:"Email draft",d:"9 sep"},{t:"Weekly priorities",d:"2 sep"}]},
+    {id:"health", name:"health",  ci:2, showName:true,  privacy:"local", keywords:["health","doctor","sleep","exercise"],
+      chats:[{t:"Questions for a checkup",d:"10 sep"},{t:"Sleep routine",d:"28 aug"}]},
+    {id:"ideas",  name:"ideas",   ci:3, showName:true,  privacy:"cloud", keywords:["idea","app","product","name"],
+      chats:[{t:"Brainstorm",d:"18 sep"},{t:"Naming options",d:"30 aug"}]},
+    {id:"taxes",  name:"taxes",   ci:4, showName:false, privacy:"anon",  keywords:["tax","budget","invoice","receipt"],
+      chats:[{t:"Invoice template",d:"14 sep"},{t:"Deadlines overview",d:"1 sep"}]},
+    {id:"travel", name:"travel",  ci:6, showName:true,  privacy:"cloud", keywords:["travel","trip","flight","hotel"],
+      chats:[{t:"Weekend itinerary",d:"5 sep"},{t:"Packing list",d:"19 aug"}]},
+    {id:"cook",   name:"cooking", ci:5, showName:true,  privacy:"cloud", keywords:["recipe","cook","bake","dinner"],
+      chats:[{t:"Soup recipe",d:"11 sep"}]},
+  ]
+};
+
+/* ---------------- state ---------------- */
+const KEY="skin.proto.v2";
+let S;
+try{ S = JSON.parse(localStorage.getItem(KEY)) || null }catch(e){ S=null }
+if(!S) S = structuredClone(DEFAULT);
+S.folders.forEach(f=>f.chats.forEach((c,i)=>{ c.id ??= f.id+"-"+i; c.m ??= [] }));
+const save=()=>{ try{ localStorage.setItem(KEY,JSON.stringify(S)) }catch(e){} };
+
+let view={name:"board"};
+
+/* ---------------- helpers ---------------- */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const colorOf=f=>f.custom || PRESETS[S.preset].colors[f.ci % PRESETS[S.preset].colors.length];
+function fgFor(hex){
+  const n=parseInt(hex.slice(1),16),r=(n>>16&255)/255,g=(n>>8&255)/255,b=(n&255)/255;
+  const L=[r,g,b].map(v=>v<=.03928?v/12.92:((v+.055)/1.055)**2.4);
+  return (.2126*L[0]+.7152*L[1]+.0722*L[2])>.28 ? "#141412" : "#F3F0E8";
+}
+const PRIV={local:"local only",anon:"anonymized",cloud:"cloud"};
+const PRIV_LONG={
+  local:"Local model only — runs on this Mac. Nothing leaves the device.",
+  anon:"Names, numbers & addresses are swapped locally before anything reaches the cloud model.",
+  cloud:"Sent to your cloud model with your own API key. Stored only here."
+};
+const rot=(id)=>{ let h=0; for(const c of id) h=(h*31+c.charCodeAt(0))|0; return ((h%7)-3)*.8 };
+function toast(t){ const el=$("#toast"); el.textContent=t; el.classList.add("show"); clearTimeout(toast.t); toast.t=setTimeout(()=>el.classList.remove("show"),2600) }
+
+function applyGlobals(){
+  const r=document.documentElement.style;
+  r.setProperty("--grain",S.grain);
+  r.setProperty("--tilt",S.tilt?1:0);
+  r.setProperty("--bg",PRESETS[S.preset].bg);
+  const total=S.folders.reduce((a,f)=>a+f.chats.length,0);
+  $("#status").innerHTML=`<b>${S.folders.length} folders</b><br>${total} conversations<br>stored on this device`;
+}
+
+/* ---------------- board ---------------- */
+function tileHTML(f,i){
+  const c=colorOf(f), fg=fgFor(c), style=`--c:${c};--fg:${fg};--r:${rot(f.id)}deg;--i:${i}`;
+  const last=f.chats[0]?.d||"";
+  if(S.envelopes && f.privacy==="local"){
+    return `<div class="sheet-wrap" style="${style}">
+      <button class="env" data-open="${f.id}" aria-label="${esc(f.showName?f.name:"private folder")}">
+        <div class="inside"></div>
+        <div class="vellum"></div>
+        <svg viewBox="0 0 100 130" preserveAspectRatio="none"><path d="M0 0 L50 70 L100 0" fill="rgba(255,255,255,.18)" stroke="rgba(0,0,0,.14)" stroke-width=".35"/><path d="M0 130 L42 64 M100 130 L58 64" stroke="rgba(0,0,0,.07)" stroke-width=".35" fill="none"/></svg>
+        <div class="tab"></div>
+        ${f.showName?`<div class="name">${esc(f.name)}</div>`:""}
+        <div class="lock">local · ${f.chats.length}</div>
+      </button></div>`;
+  }
+  return `<div class="sheet-wrap" style="${style}">
+    <button class="sheet" data-open="${f.id}" aria-label="${esc(f.showName?f.name:"folder")}">
+      ${f.image?`<div class="img" style="background-image:url('${f.image}')"></div>`:""}
+      <div class="tex"></div>
+      ${f.showName?`<div class="name">${esc(f.name)}</div>`:""}
+      <div class="count">${String(f.chats.length).padStart(2,"0")}</div>
+      <div class="foot"><span>${f.chats.length} ${f.chats.length===1?"thread":"threads"}<br>last ${esc(last)}</span><span>${PRIV[f.privacy]}</span></div>
+      <div class="corner"></div>
+    </button></div>`;
+}
+function renderBoard(){
+  $("#crumbs").innerHTML=`<div class="meta"><b>skin</b><br>your conversations,<br>on paper</div>`;
+  $("#app").innerHTML=`
+    <section class="board">
+      ${S.folders.map(tileHTML).join("")}
+      <div class="sheet-wrap" style="--i:${S.folders.length};filter:none"><button class="new-sheet" id="addFolder">+ new folder</button></div>
+    </section>
+    <div class="composer">
+      <form id="quick"><input id="q" placeholder="start a new thought…" autocomplete="off"><button>write</button></form>
+      <div class="hint">new chats sort themselves into a folder</div>
+    </div>`;
+  $("#quick").onsubmit=e=>{
+    e.preventDefault(); const t=$("#q").value.trim(); if(!t) return;
+    const f=classify(t);
+    const chat={id:f.id+"-"+Date.now(),t:t.length>48?t.slice(0,46)+"…":t,d:"today",m:[{me:true,x:t}]};
+    f.chats.unshift(chat); save();
+    toast(`→ filed in ${f.showName?f.name:"a private folder"}`);
+    setTimeout(()=>go({name:"room",fid:f.id,cid:chat.id,reply:true}),650);
+  };
+  $("#addFolder").onclick=()=>{
+    const id="f"+Date.now();
+    S.folders.push({id,name:"new folder",ci:S.folders.length,showName:true,privacy:"cloud",keywords:[],chats:[]});
+    save(); render(); openSettings(id);
+  };
+}
+
+/* stand-in for the LLM classifier */
+function classify(t){
+  const s=t.toLowerCase(); let best=null,score=0;
+  for(const f of S.folders){ const k=f.keywords.filter(w=>s.includes(w)).length; if(k>score){score=k;best=f} }
+  if(best) return best;
+  let inbox=S.folders.find(f=>f.id==="inbox");
+  if(!inbox){ inbox={id:"inbox",name:"unsorted",ci:5,showName:true,privacy:"cloud",keywords:[],chats:[]}; S.folders.push(inbox) }
+  return inbox;
+}
+
+/* ---------------- room (folder + chat) ---------------- */
+function renderRoom(){
+  const f=S.folders.find(x=>x.id===view.fid); if(!f) return go({name:"board"});
+  const c=colorOf(f), fg=fgFor(c);
+  const chat=f.chats.find(x=>x.id===view.cid);
+  $("#crumbs").innerHTML=`<div class="crumbs"><button id="back">← board</button><span>/</span><span>${esc(f.showName?f.name:"●●●")}</span></div>`;
+  $("#app").innerHTML=`
+    <section class="room">
+      <aside class="strip" style="--c:${c};--fg:${fg}">
+        <div class="tex"></div>
+        <h1>${f.showName?esc(f.name):"&nbsp;"}</h1>
+        <div class="label-card">${PRIV_LONG[f.privacy]}</div>
+        <ol>${f.chats.map((x,i)=>`<li class="${chat&&x.id===chat.id?"on":""}"><button data-chat="${x.id}"><span class="n">${f.chats.length-i}</span><span><div class="t">${esc(x.t)}</div><div class="d">${esc(x.d)}</div></span></button></li>`).join("")}</ol>
+      </aside>
+      <article class="page">
+        <div class="tex"></div>
+        ${chat?`
+          <header><h2>${esc(chat.t)}</h2><span class="badge">${PRIV[f.privacy]}</span></header>
+          <div class="msgs" id="msgs">${chat.m.length?chat.m.map(msgHTML).join(""):`<div class="empty">this thread is imported.<br>messages load from your export.</div>`}</div>
+          <form id="send"><input id="mi" placeholder="reply…" autocomplete="off"><button>send</button></form>`
+        :`<div class="empty">pick a thread<br>or <button id="newIn" style="text-decoration:underline">start one here</button></div>`}
+      </article>
+    </section>`;
+  $("#back").onclick=()=>go({name:"board"});
+  document.querySelectorAll("[data-chat]").forEach(b=>b.onclick=()=>go({name:"room",fid:f.id,cid:b.dataset.chat}));
+  $("#newIn")?.addEventListener("click",()=>{
+    const ch={id:f.id+"-"+Date.now(),t:"untitled",d:"today",m:[]}; f.chats.unshift(ch); save(); go({name:"room",fid:f.id,cid:ch.id});
+  });
+  if(chat){
+    const box=$("#msgs"); box.scrollTop=box.scrollHeight;
+    $("#send").onsubmit=e=>{
+      e.preventDefault(); const t=$("#mi").value.trim(); if(!t) return;
+      chat.m.push({me:true,x:t}); if(chat.t==="untitled") chat.t=t.slice(0,46); save();
+      view.reply=true; renderRoom();
+    };
+    if(view.reply){ view.reply=false; setTimeout(()=>{ chat.m.push({me:false,x:mockReply(f)}); save(); if(view.cid===chat.id) renderRoom() },700) }
+  }
+}
+function msgHTML(m){ return `<div class="msg ${m.me?"me":""}"><div class="who">${m.me?"you":"model"}</div><div class="body">${esc(m.x)}</div></div>` }
+function mockReply(f){
+  return {
+    local:"(prototype) In the real app this goes to a local model — Ollama on your Mac. This folder never touches the internet.",
+    anon:"(prototype) A local model would first replace names, numbers and addresses with placeholders, then ask Claude, then put your details back into the answer.",
+    cloud:"(prototype) This would stream from Claude or GPT using your own API key. The conversation is saved only on this device."
+  }[f.privacy];
+}
+
+/* ---------------- settings ---------------- */
+function openSettings(focusId){
+  renderSettings(focusId);
+  $("#drawer").classList.add("open"); $("#scrim").classList.add("open");
+}
+function closeSettings(){ $("#drawer").classList.remove("open"); $("#scrim").classList.remove("open") }
+function renderSettings(openId){
+  const P=PRESETS[S.preset];
+  $("#settingsBody").innerHTML=`
+    <div class="sec"><h4>skin</h4>
+      <div class="presets">${Object.entries(PRESETS).map(([k,p])=>`
+        <button class="preset ${k===S.preset?"on":""}" data-preset="${k}">
+          <div class="sw">${p.colors.map(c=>`<i style="background:${c}"></i>`).join("")}</div>
+          <span>${p.name}</span><small>${p.note}</small></button>`).join("")}
+      </div>
+    </div>
+    <div class="sec"><h4>paper</h4>
+      <div class="row">grain <input type="range" min="0" max=".8" step=".02" value="${S.grain}" id="grain"></div>
+      <div class="row">loose, tilted sheets <button class="switch" role="switch" aria-checked="${S.tilt}" id="tilt"></button></div>
+      <div class="row">vellum envelopes for local-only folders <button class="switch" role="switch" aria-checked="${S.envelopes}" id="envs"></button></div>
+    </div>
+    <div class="sec"><h4>folders</h4>
+      ${S.folders.map(f=>`
+        <details class="fold" ${f.id===openId?"open":""} data-f="${f.id}">
+          <summary><span class="chip" style="background:${colorOf(f)}"></span><span class="fn">${esc(f.name)}</span><span class="pv">${PRIV[f.privacy]}</span></summary>
+          <div class="inner">
+            <input type="text" value="${esc(f.name)}" data-k="name" aria-label="Folder name">
+            <div class="row">show name on the board <button class="switch" role="switch" aria-checked="${f.showName}" data-k="showName"></button></div>
+            <div class="swatches">${P.colors.map((c,i)=>`<button style="background:${c}" class="${!f.custom&&f.ci%P.colors.length===i?"on":""}" data-ci="${i}" aria-label="color ${i+1}"></button>`).join("")}
+              <label title="custom color" style="${f.custom?`background:${f.custom};border-style:solid`:""}">${f.custom?"":"+"}<input type="color" value="${f.custom||colorOf(f)}" data-k="custom"></label></div>
+            <div class="seg">${["local","anon","cloud"].map(p=>`<button class="${f.privacy===p?"on":""}" data-priv="${p}">${PRIV[p]}</button>`).join("")}</div>
+            <div class="small">${PRIV_LONG[f.privacy]}</div>
+            <div class="imgrow"><label>${f.image?"replace image":"add image"}<input type="file" accept="image/*" data-k="image"></label>${f.image?`<button data-k="noimg">remove</button>`:""}</div>
+          </div>
+        </details>`).join("")}
+    </div>
+    <div class="sec"><h4>model</h4>
+      <div class="row">cloud model <select style="width:170px"><option>Claude (API key)</option><option>OpenAI (API key)</option></select></div>
+      <div class="row">local model <select style="width:170px"><option>Ollama · llama3.2</option><option>LM Studio</option></select></div>
+      <p class="small" style="margin-top:8px">Prototype — models aren't connected yet. Keys will be stored only on this device and sent straight to the provider.</p>
+    </div>
+    <div class="sec"><h4>data</h4>
+      <p class="small">Import the export ZIP from Claude or ChatGPT (Settings → Privacy → Export data). Everything is parsed locally.</p>
+      <div class="row"><button class="settings-btn" id="reset">reset demo</button></div>
+    </div>`;
+
+  const B=$("#settingsBody");
+  B.querySelectorAll("[data-preset]").forEach(b=>b.onclick=()=>{ S.preset=b.dataset.preset; commit(openIdNow()) });
+  $("#grain").oninput=e=>{ S.grain=+e.target.value; applyGlobals(); save() };
+  $("#tilt").onclick=()=>{ S.tilt=!S.tilt; commit() };
+  $("#envs").onclick=()=>{ S.envelopes=!S.envelopes; commit() };
+  $("#reset").onclick=()=>{ S=structuredClone(DEFAULT); S.folders.forEach(f=>f.chats.forEach((c,i)=>{c.id=f.id+"-"+i;c.m=[]})); commit() };
+  B.querySelectorAll(".fold").forEach(el=>{
+    const f=S.folders.find(x=>x.id===el.dataset.f);
+    el.querySelector("[data-k=name]").onchange=e=>{ f.name=e.target.value.trim()||"untitled"; commit(f.id) };
+    el.querySelector("[data-k=showName]").onclick=()=>{ f.showName=!f.showName; commit(f.id) };
+    el.querySelectorAll("[data-ci]").forEach(b=>b.onclick=()=>{ f.ci=+b.dataset.ci; f.custom=null; commit(f.id) });
+    el.querySelector("[data-k=custom]").onchange=e=>{ f.custom=e.target.value; commit(f.id) };
+    el.querySelectorAll("[data-priv]").forEach(b=>b.onclick=()=>{ f.privacy=b.dataset.priv; commit(f.id) });
+    el.querySelector("[data-k=image]").onchange=e=>{
+      const file=e.target.files[0]; if(!file) return;
+      const img=new Image(), url=URL.createObjectURL(file);
+      img.onload=()=>{ // downscale so it fits in local storage
+        const s=Math.min(1,480/Math.max(img.width,img.height)), c=document.createElement("canvas");
+        c.width=img.width*s; c.height=img.height*s; c.getContext("2d").drawImage(img,0,0,c.width,c.height);
+        f.image=c.toDataURL("image/jpeg",.8); URL.revokeObjectURL(url); commit(f.id);
+      }; img.src=url;
+    };
+    el.querySelector("[data-k=noimg]")?.addEventListener("click",()=>{ f.image=null; commit(f.id) });
+  });
+}
+const openIdNow=()=>$("#settingsBody .fold[open]")?.dataset.f;
+function commit(openId=openIdNow()){ save(); render(); renderSettings(openId) }
+
+/* ---------------- router ---------------- */
+function go(v){ view=v; render(); window.scrollTo(0,0) }
+function render(){
+  applyGlobals();
+  view.name==="room" ? renderRoom() : renderBoard();
+  document.querySelectorAll("[data-open]").forEach(b=>b.onclick=()=>{
+    const f=S.folders.find(x=>x.id===b.dataset.open);
+    go({name:"room",fid:f.id,cid:f.chats[0]?.id});
+  });
+}
+$("#openSettings").onclick=()=>openSettings();
+$("#closeSettings").onclick=closeSettings;
+$("#scrim").onclick=closeSettings;
+addEventListener("keydown",e=>{ if(e.key==="Escape") closeSettings() });
+render();
+</script>
+</body>
+</html>
